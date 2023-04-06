@@ -42,9 +42,9 @@ Future<String> copyBinary() async {
     return binaryFile.path;
   }
   else if(Platform.isLinux){
-    final ByteData data = await rootBundle.load('bin/pcl6linux');
+    final ByteData data = await rootBundle.load('bin/linux/gs_amd64');
     final String tempPath = Directory.systemTemp.path;
-    final File binaryFile = File('$tempPath/pcl6linux');
+    final File binaryFile = File('$tempPath/gs_amd64');
     debugPrint(binaryFile.path);
 
     await binaryFile.writeAsBytes(
