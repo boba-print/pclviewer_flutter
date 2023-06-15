@@ -8,6 +8,7 @@ import 'package:flutter/services.dart';
 import 'package:open_file/open_file.dart';
 import 'package:pcl_viewer/utils/gs.dart';
 import 'package:pcl_viewer/view/widget/drop_box.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -68,8 +69,9 @@ class _HomeScreenState extends State<HomeScreen> {
             _loading = false;
           });
           await OpenFile.open(outputFile);
-        } catch (e) {
-          debugPrint('Error: $e');
+        } catch (exception, stackTrace) {
+          await Sentry.captureException(exception, stackTrace: stackTrace);
+          debugPrint('Error: $exception');
         }
       }
     } on PlatformException catch (e) {
@@ -81,23 +83,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return DropTarget(
-        onDragDone: (detail) async {
-          for (final file in detail.files) {
-            try {
-              if (!file.path.endsWith(".pcl")) {
-                showAlertDialog();
-                return;
-              }
-              final outputFile = "${file.path}.pdf";
-              await convertPCLtoPDF(file.path, outputFile);
-              await OpenFile.open(outputFile);
-            } catch (e) {
-              // alert
-              debugPrint('Error: $e');
-            }
-          }
-        },
-        child: DropBox(_loading, _pickFiles));
+    return DropBox(_loading, _pickFiles, showAlertDialog);
   }
 }

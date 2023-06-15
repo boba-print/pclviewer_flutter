@@ -6,6 +6,7 @@ import 'package:open_file/open_file.dart';
 import 'package:pcl_viewer/top_bar.dart';
 import 'package:pcl_viewer/utils/gs.dart';
 import 'package:pcl_viewer/view/screen/home_screen.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:window_manager/window_manager.dart';
 
 void main(List<String> args) async {
@@ -24,7 +25,12 @@ void main(List<String> args) async {
     await windowManager.focus();
   });
   final startFile = await getStartFile(args);
-  runApp(MainApp(startFile));
+  await SentryFlutter.init(
+    (options) {
+      options.dsn = "https://0b1a424e713c4cdea9d1d9d498fb3de6@o4505362080137216.ingest.sentry.io/4505362080792576";
+    },
+    appRunner: () => runApp(MainApp(startFile)),
+  );
 }
 
 Future<String> getStartFile(List<String> args) async {
