@@ -53,6 +53,9 @@ class _HomeScreenState extends State<HomeScreen> {
             debugPrint(status.toString()),
         allowedExtensions: (['pcl']),
       ));
+      setState(() {
+        _loading = true;
+      });
       // for each in _paths
       for (final file in _paths!.files) {
         try {
@@ -61,13 +64,7 @@ class _HomeScreenState extends State<HomeScreen> {
             return;
           }
           final outputFile = "${file.path}.pdf";
-          setState(() {
-            _loading = true;
-          });
           await convertPCLtoPDF(file.path!, outputFile);
-          setState(() {
-            _loading = false;
-          });
           await OpenFile.open(outputFile);
         } catch (exception, stackTrace) {
           await Sentry.captureException(exception, stackTrace: stackTrace);
@@ -78,6 +75,10 @@ class _HomeScreenState extends State<HomeScreen> {
       debugPrint("Unsupported operation" + e.toString());
     } catch (ex) {
       debugPrint(ex.toString());
+    } finally {
+      setState(() {
+        _loading = false;
+      });
     }
   }
 

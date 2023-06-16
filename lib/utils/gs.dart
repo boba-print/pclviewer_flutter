@@ -1,5 +1,8 @@
 import 'dart:io';
+
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
+import 'package:path/path.dart' as path;
 
 Future<void> convertPCLtoPDF(String targetFile, String outputFile) async {
   String binaryPath = '';
@@ -22,7 +25,21 @@ Future<void> convertPCLtoPDF(String targetFile, String outputFile) async {
 
   if (binaryPath == '') throw Exception("Unsupported platform");
 
-  await Process.run(binaryPath, [
+  final ByteData data = await rootBundle.load(binaryPath);
+  final String tempPath = Directory.systemTemp.path;
+  // Use only the file name for the temporary file.
+  final String binaryFileName = path.basename(binaryPath);
+  final File binaryFile = File('$tempPath/$binaryFileName');
+
+  if (!binaryFile.existsSync()) {
+    await binaryFile.writeAsBytes(
+        data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes));
+    if (Platform.isMacOS) {
+      await Process.run('chmod', ['+x', binaryFile.path]);
+    }
+  }
+
+  await Process.run(binaryFile.path, [
     "-dNOPAUSE",
     "-dQUIET",
     "-dBATCH",
