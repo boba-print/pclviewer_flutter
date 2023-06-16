@@ -35,6 +35,10 @@ migrate_working_dir/
 # GhostScript Binary
 /lib/bin/
 
+# installers
+/installers/dmg_creator/pcl-viewer.dmg
+/installers/dmg_creator/pcl-viewer.dmg.zip
+
 # Symbolication related
 app.*.symbols
 
