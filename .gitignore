@@ -32,6 +32,9 @@ migrate_working_dir/
 .pub/
 /build/
 
+# GhostScript Binary
+/lib/bin/
+
 # Symbolication related
 app.*.symbols
 
